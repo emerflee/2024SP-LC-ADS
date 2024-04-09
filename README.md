@@ -1,3 +1,7 @@
-# 2024SP-LC-ADS
-Lewis &amp; Clark Applied Data Science Course
-# H1
+# species-distribution-modeling
+
+Using R to generate species distribution modeling
+
+## *Western Bumblebee*
+
+![Bombus occidentalis, a certified cutie pie.](images/usfws-estern-bumble-bee-purple-flower-medium.jpeg)
