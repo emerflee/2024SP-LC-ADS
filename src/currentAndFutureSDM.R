@@ -138,8 +138,8 @@ ggsave("output/bombusCurrentSdm.jpg",  width = 8, height = 6)
 ## First we need to pare down the observations to fewer than 2000 observations so that the raster can actually run
 
 tidierCleanData<- cleanData %>%
-  filter(stateProvince %in% c("Washington", "Oregon"))
-# this has 1470
+  filter(stateProvince == "Oregon")
+
 write.csv(tidierCleanData, "data/tidierCleanData.csv")
 tidierOccCoords<-read_csv("data/tidierCleanData.csv") %>%
   dplyr::select(decimalLongitude, decimalLatitude)
@@ -147,10 +147,6 @@ tidierOccCoords<-read_csv("data/tidierCleanData.csv") %>%
 tidierOccSpatialPts <- SpatialPoints(tidierOccCoords, proj4string = CRS("+proj=longlat"))
 
 
-# occurrenceCoords<-read_csv("data/cleanData.csv") %>%
-#   dplyr::select(decimalLongitude, decimalLatitude)
-# 
-# occurrenceSpatialPts <- SpatialPoints(occurrenceCoords, proj4string = CRS("+proj=longlat"))
 
 # now get the climate data
 # make sure RAM is bumped up
