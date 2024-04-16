@@ -56,4 +56,8 @@ cleanData <- d%>%
 
 write.csv(cleanData, "data/cleanData.csv")
 
+tidierCleanData<- cleanData %>%
+  filter(stateProvince %in% c("Washington", "Oregon", "California"))
+write.csv(tidierCleanData, "data/tidierCleanData.csv")
+
 
