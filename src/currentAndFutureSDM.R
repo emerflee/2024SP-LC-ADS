@@ -137,8 +137,16 @@ ggsave("output/bombusCurrentSdm.jpg",  width = 8, height = 6)
 
 ## First we need to pare down the observations to fewer than 2000 observations so that the raster can actually run
 
+range(cleanData$year, na.rm=TRUE)
+freqPlot<- ggplot(cleanData, mapping=aes(x=year))+geom_histogram(fill="lightgreen", color = "darkgreen", bins = 15)+ labs(x="year", title="Frequency of Occurrances")
+freqPlot
+
 tidierCleanData<- cleanData %>%
-  filter(stateProvince == "Oregon")
+  filter(stateProvince %in% c("Washington", "Oregon"))
+
+range(tidierCleanData$year, na.rm=TRUE)
+tidierFreqPlot<- ggplot(tidierCleanData, mapping=aes(x=year))+geom_histogram(fill="lightgreen", color = "darkgreen", bins = 15)+ labs(x="year", title="Frequency of Occurrances")
+tidierFreqPlot
 
 write.csv(tidierCleanData, "data/tidierCleanData.csv")
 tidierOccCoords<-read_csv("data/tidierCleanData.csv") %>%
@@ -190,7 +198,7 @@ plot(tidierOccSpatialPts, add = TRUE)
 
 mask <- raster(climList[[1]]) 
 
-geographicExtent <- extent(x = occurrenceSpatialPts)
+geographicExtent <- extent(x = tidierOccSpatialPts)
 
 set.seed(45)
 
@@ -250,11 +258,11 @@ ggplot() +
                fill = "grey75") +
   geom_raster(data = bombusTidierPredictDf, aes(x = x, y = y, fill = layer)) + 
   scale_fill_gradientn(colors = terrain.colors(10, rev = T)) +
-  coord_fixed(xlim = c(xmin, xmax), ylim = c(ymin, ymax), expand = F) +#expand=F fixes margin
+  coord_fixed(xlim = c(xtmin, xtmax), ylim = c(ytmin, ytmax), expand = F) +#expand=F fixes margin
   scale_size_area() +
   borders("state") +
   borders("world", colour = "black", fill = NA) + 
-  labs(title = "SDM of Bombus occidentalis in Washington, Oregon, and California Under Current Climate Conditions",
+  labs(title = "SDM of Bombus occidentalis in Washington and Oregon Under Current Climate Conditions",
        x = "longitude",
        y = "latitude",
        fill = "Environmental Suitability")+ 
@@ -295,5 +303,26 @@ bombusFutureSDM <- raster::predict(bombusTidierCurrentSDM, geographicAreaFutureC
 
 
 bombusFutureSDMDf <- as.data.frame(bombusFutureSDM, xy=TRUE)
+
+xfmax<- max(bombusFutureSDMDf$x)
+xfmin<- min(bombusFutureSDMDf$x)
+yfmax<- max(bombusFutureSDMDf$y)
+yfmin<- min(bombusFutureSDMDf$y)
+
+ggplot() + 
+  geom_polygon(data = wrld, mapping = aes(x = long, y = lat, group = group),
+               fill = "grey75") + 
+  geom_raster(data = bombusFutureSDMDf, aes(x = x, y = y, fill = maxent)) + 
+  scale_fill_gradientn(colors = terrain.colors(10, rev = T)) + 
+  coord_fixed(xlim = c(xfmin, xfmax), ylim = c(yfmin, yfmax), expand = F) + 
+  scale_size_area() + 
+  borders("state") + 
+  borders("world", colour = "black", fill = NA) + 
+  labs(title = "Future SDM of Bombus occidentalus under CMIP6 Climate Conditions",
+       x = "longitude", y = "latitude", fill = "Env Suitability") + 
+  theme(legend.box.background = element_rect(), legend.box.margin=margin(5,5,5,5))
+
+ggsave("output/bombusFutureSdm.jpg", width = 8, height = 6)
+
 
 
